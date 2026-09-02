@@ -101,10 +101,15 @@ document.querySelectorAll("[data-tilt]").forEach((card) => {
 });
 
 const storyCanvas = document.getElementById("storyCanvas");
+const storyWrap = document.getElementById("storyStageWrap");
+const storySpot = document.getElementById("storySpot");
 const storyCards = [...document.querySelectorAll("[data-story]")];
 const storyLayers = [...document.querySelectorAll("[data-layer]")];
+const storyHotspots = [...document.querySelectorAll(".hotspot")];
 const storyMeter = document.getElementById("storyMeterFill");
+const storyMeterTrack = document.getElementById("storyMeter");
 const storyStepNum = document.getElementById("storyStepNum");
+const storyToggle = document.getElementById("storyToggle");
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const FRAME_COUNT = 48;
 
@@ -138,7 +143,9 @@ const setupStory = (frames) => {
   let lastFrame = -1;
 
   const setStep = (step) => {
-    if (step === activeStep && storyCards[step]?.classList.contains("is-active")) return;
+    if (step === activeStep && storyCards[step]?.classList.contains("is-active")) {
+      return;
+    }
     activeStep = step;
     storyCards.forEach((card, index) => {
       card.classList.toggle("is-active", index === step);
@@ -146,7 +153,11 @@ const setupStory = (frames) => {
     storyLayers.forEach((layer, index) => {
       layer.classList.toggle("is-on", index === step);
     });
+    storyHotspots.forEach((spot, index) => {
+      spot.classList.toggle("is-on", index === step);
+    });
     if (storyStepNum) storyStepNum.textContent = String(step + 1).padStart(2, "0");
+    if (storyToggle) storyToggle.textContent = step >= 3 ? "Explode" : "Assemble";
   };
 
   const storyTween = gsap.to(playhead, {
@@ -203,24 +214,120 @@ const setupStory = (frames) => {
 
   setStep(0);
 
-  const seekToStep = (step) => {
+  const seekToProgress = (progress, smooth = true) => {
     const trigger = storyTween.scrollTrigger;
     if (!trigger) return;
-    const progress = gsap.utils.clamp(0.04, 0.9, (step + 0.28) / 4);
+    const next = gsap.utils.clamp(0, 1, progress);
     window.scrollTo({
-      top: trigger.start + progress * (trigger.end - trigger.start),
-      behavior: reduceMotion ? "auto" : "smooth",
+      top: trigger.start + next * (trigger.end - trigger.start),
+      behavior: smooth && !reduceMotion ? "smooth" : "auto",
     });
   };
 
-  storyCards.forEach((card) => {
-    card.addEventListener("click", () => seekToStep(Number(card.dataset.step)));
-    card.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        seekToStep(Number(card.dataset.step));
-      }
+  const seekToStep = (step) => {
+    seekToProgress((step + 0.28) / 4);
+  };
+
+  const bindStep = (el) => {
+    if (!el) return;
+    el.addEventListener("click", () => seekToStep(Number(el.dataset.step)));
+    el.addEventListener("mouseenter", () => {
+      const step = Number(el.dataset.step);
+      storyCards.forEach((card, index) => {
+        card.classList.toggle("is-hot", index === step);
+      });
+      storyLayers.forEach((layer, index) => {
+        layer.classList.toggle("is-on", index === step);
+      });
+      storyHotspots.forEach((spot, index) => {
+        spot.classList.toggle("is-on", index === step);
+      });
     });
+    el.addEventListener("mouseleave", () => {
+      storyCards.forEach((card) => card.classList.remove("is-hot"));
+      storyLayers.forEach((layer, index) => {
+        layer.classList.toggle("is-on", index === activeStep);
+      });
+      storyHotspots.forEach((spot, index) => {
+        spot.classList.toggle("is-on", index === activeStep);
+      });
+    });
+  };
+
+  storyCards.forEach(bindStep);
+  storyHotspots.forEach(bindStep);
+
+  document.getElementById("storyPrev")?.addEventListener("click", () => {
+    seekToStep(Math.max(0, activeStep - 1));
+  });
+  document.getElementById("storyNext")?.addEventListener("click", () => {
+    seekToStep(Math.min(3, activeStep + 1));
+  });
+  storyToggle?.addEventListener("click", () => {
+    seekToProgress(activeStep >= 3 ? 0.04 : 0.92);
+  });
+
+  storyMeterTrack?.addEventListener("click", (event) => {
+    const rect = storyMeterTrack.getBoundingClientRect();
+    seekToProgress((event.clientX - rect.left) / rect.width);
+  });
+
+  let dragging = false;
+  let startY = 0;
+  let startProgress = 0;
+
+  storyWrap?.addEventListener("pointerdown", (event) => {
+    if (event.target.closest(".hotspot, .story-card, .story-copy")) return;
+    dragging = true;
+    storyWrap.classList.add("is-dragging");
+    storyWrap.setPointerCapture(event.pointerId);
+    startY = event.clientY;
+    startProgress = storyTween.scrollTrigger?.progress || 0;
+  });
+
+  storyWrap?.addEventListener("pointermove", (event) => {
+    const rect = storyWrap.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    if (storySpot) {
+      storySpot.style.left = `${x}px`;
+      storySpot.style.top = `${y}px`;
+    }
+    if (!reduceMotion) {
+      const px = (x / rect.width - 0.5) * 18;
+      const py = (y / rect.height - 0.5) * 12;
+      storyWrap.style.transform = `translate3d(${px}px, ${py}px, 0)`;
+    }
+    if (!dragging) return;
+    const delta = (startY - event.clientY) / 380;
+    seekToProgress(startProgress + delta, false);
+  });
+
+  const endDrag = () => {
+    dragging = false;
+    storyWrap?.classList.remove("is-dragging");
+  };
+  storyWrap?.addEventListener("pointerup", endDrag);
+  storyWrap?.addEventListener("pointercancel", endDrag);
+  storyWrap?.addEventListener("pointerleave", () => {
+    if (!dragging && !reduceMotion) {
+      storyWrap.style.transform = "translate3d(0,0,0)";
+    }
+  });
+
+  window.addEventListener("keydown", (event) => {
+    const trigger = storyTween.scrollTrigger;
+    if (!trigger) return;
+    const inView = window.scrollY >= trigger.start - 40 && window.scrollY <= trigger.end + 40;
+    if (!inView) return;
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      event.preventDefault();
+      seekToStep(Math.min(3, activeStep + 1));
+    }
+    if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      event.preventDefault();
+      seekToStep(Math.max(0, activeStep - 1));
+    }
   });
 };
 
