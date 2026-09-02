@@ -164,7 +164,7 @@ body {
 }
 
 .hero-video,
-.story-video {
+.story-stage {
   position: absolute;
   inset: 0;
   z-index: 0;
@@ -500,10 +500,10 @@ body {
   overflow: hidden;
 }
 
-.story-video {
-  transform: scale(1.12);
+.story-stage {
+  transform: scale(1.08);
   transform-origin: 52% 46%;
-  will-change: transform, filter;
+  will-change: transform;
 }
 
 .story-veil {

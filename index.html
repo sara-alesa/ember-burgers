@@ -62,7 +62,8 @@
         muted
         loop
         playsinline
-        preload="auto"
+        preload="metadata"
+        poster="assets/poster.jpg"
       >
         <source src="assets/hero-burger.mp4" type="video/mp4" />
       </video>
@@ -199,9 +200,7 @@
 
     <section class="story" id="story">
       <div class="story-pin">
-        <video class="story-video" id="storyVideo" muted playsinline preload="auto">
-          <source src="assets/hero-burger.mp4" type="video/mp4" />
-        </video>
+        <canvas class="story-stage" id="storyCanvas" width="1280" height="720" aria-hidden="true"></canvas>
         <div class="story-veil"></div>
         <div class="story-glow" aria-hidden="true"></div>
 

@@ -100,25 +100,45 @@ document.querySelectorAll("[data-tilt]").forEach((card) => {
   });
 });
 
-const storyVideo = document.getElementById("storyVideo");
+const storyCanvas = document.getElementById("storyCanvas");
 const storyCards = [...document.querySelectorAll("[data-story]")];
 const storyLayers = [...document.querySelectorAll("[data-layer]")];
 const storyMeter = document.getElementById("storyMeterFill");
 const storyStepNum = document.getElementById("storyStepNum");
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const FRAME_COUNT = 48;
+
+const loadFrames = () =>
+  Promise.all(
+    Array.from({ length: FRAME_COUNT }, (_, index) => {
+      const image = new Image();
+      image.src = `assets/frames/frame-${String(index).padStart(2, "0")}.jpg`;
+      return new Promise((resolve) => {
+        image.onload = () => resolve(image);
+        image.onerror = () => resolve(image);
+      });
+    })
+  );
+
+const drawFrame = (image) => {
+  if (!storyCanvas || !image || !image.width) return;
+  const ctx = storyCanvas.getContext("2d", { alpha: false });
+  ctx.drawImage(image, 0, 0, storyCanvas.width, storyCanvas.height);
+};
 
 let storyReady = false;
-const setupStory = () => {
-  if (storyReady || !storyVideo) return;
+const setupStory = (frames) => {
+  if (storyReady || !storyCanvas || !frames.length) return;
   storyReady = true;
-  const duration = storyVideo.duration || 1;
-  storyVideo.pause();
 
-  const media = { time: 0, scale: 1.12 };
+  drawFrame(frames[0]);
+
+  const playhead = { frame: 0, scale: 1.08 };
   let activeStep = 0;
+  let lastFrame = -1;
 
   const setStep = (step) => {
-    if (step === activeStep && storyCards[step].classList.contains("is-active")) return;
+    if (step === activeStep && storyCards[step]?.classList.contains("is-active")) return;
     activeStep = step;
     storyCards.forEach((card, index) => {
       card.classList.toggle("is-active", index === step);
@@ -129,46 +149,66 @@ const setupStory = () => {
     if (storyStepNum) storyStepNum.textContent = String(step + 1).padStart(2, "0");
   };
 
-  const storyTween = gsap.to(media, {
-    time: duration * 0.98,
-    scale: 1.02,
+  const storyTween = gsap.to(playhead, {
+    frame: FRAME_COUNT - 1,
+    scale: 1,
+    snap: "frame",
     ease: "none",
     scrollTrigger: {
       id: "storyPin",
       trigger: ".story-pin",
       start: "top top",
-      end: "+=180%",
+      end: "+=240%",
       pin: true,
       pinSpacing: true,
-      scrub: reduceMotion ? 0 : 1.35,
+      scrub: reduceMotion ? 0 : 1.15,
       anticipatePin: 1,
       invalidateOnRefresh: true,
       onUpdate: (self) => {
-        const progress = self.progress;
-        const step = Math.min(3, Math.floor(progress * 4));
+        const step = Math.min(3, Math.floor(self.progress * 4));
         setStep(step);
-        if (storyMeter) storyMeter.style.width = `${progress * 100}%`;
+        if (storyMeter) storyMeter.style.width = `${self.progress * 100}%`;
       },
     },
     onUpdate: () => {
-      if (storyVideo.readyState < 1) return;
-      if (!storyVideo.seeking && Math.abs(storyVideo.currentTime - media.time) > 0.03) {
-        storyVideo.currentTime = media.time;
+      const index = Math.round(playhead.frame);
+      if (index !== lastFrame) {
+        lastFrame = index;
+        drawFrame(frames[index]);
       }
-      storyVideo.style.transform = `scale(${media.scale})`;
+      storyCanvas.style.transform = `scale(${playhead.scale})`;
     },
   });
+
+  gsap.fromTo(
+    storyCards,
+    { x: 36, opacity: 0.25 },
+    {
+      x: 0,
+      opacity: 1,
+      stagger: 0.1,
+      duration: 0.75,
+      ease: "power3.out",
+      scrollTrigger: {
+        trigger: "#story",
+        start: "top 78%",
+        toggleActions: "play none none none",
+      },
+      onComplete: () => {
+        gsap.set(storyCards, { clearProps: "opacity,transform" });
+        setStep(0);
+      },
+    }
+  );
 
   setStep(0);
 
   const seekToStep = (step) => {
     const trigger = storyTween.scrollTrigger;
     if (!trigger) return;
-    ScrollTrigger.refresh();
-    const progress = gsap.utils.clamp(0.02, 0.92, (step + 0.22) / 4);
-    const top = trigger.start + progress * (trigger.end - trigger.start);
+    const progress = gsap.utils.clamp(0.04, 0.9, (step + 0.28) / 4);
     window.scrollTo({
-      top,
+      top: trigger.start + progress * (trigger.end - trigger.start),
       behavior: reduceMotion ? "auto" : "smooth",
     });
   };
@@ -184,12 +224,7 @@ const setupStory = () => {
   });
 };
 
-if (storyVideo.readyState >= 1) {
-  setupStory();
-} else {
-  storyVideo.addEventListener("loadedmetadata", setupStory, { once: true });
-  window.addEventListener("load", setupStory, { once: true });
-}
+loadFrames().then(setupStory);
 
 window.addEventListener("load", () => {
   ScrollTrigger.refresh();
