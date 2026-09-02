@@ -81,32 +81,106 @@ document.querySelectorAll("[data-tilt]").forEach((card) => {
 });
 
 const storyVideo = document.getElementById("storyVideo");
+const storyCards = [...document.querySelectorAll("[data-story]")];
+const storyLayers = [...document.querySelectorAll("[data-layer]")];
+const storyMeter = document.getElementById("storyMeterFill");
+const storyStepNum = document.getElementById("storyStepNum");
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const setupStory = () => {
   const duration = storyVideo.duration || 1;
+  storyVideo.pause();
 
-  gsap.from("[data-story]", {
+  const media = { time: 0, scale: 1.12 };
+  let activeStep = 0;
+
+  const setStep = (step) => {
+    if (step === activeStep && storyCards[step].classList.contains("is-active")) return;
+    activeStep = step;
+    storyCards.forEach((card, index) => {
+      card.classList.toggle("is-active", index === step);
+    });
+    storyLayers.forEach((layer, index) => {
+      layer.classList.toggle("is-on", index === step);
+    });
+    if (storyStepNum) storyStepNum.textContent = String(step + 1).padStart(2, "0");
+  };
+
+  const storyTween = gsap.to(media, {
+    time: duration * 0.98,
+    scale: 1.02,
+    ease: "none",
+    scrollTrigger: {
+      id: "storyPin",
+      trigger: ".story-pin",
+      start: "top top",
+      end: "+=260%",
+      pin: true,
+      scrub: reduceMotion ? 0 : 1.35,
+      anticipatePin: 1,
+      onUpdate: (self) => {
+        const progress = self.progress;
+        const step = Math.min(3, Math.floor(progress * 4));
+        setStep(step);
+        if (storyMeter) storyMeter.style.width = `${progress * 100}%`;
+      },
+    },
+    onUpdate: () => {
+      if (storyVideo.readyState < 1) return;
+      if (!storyVideo.seeking && Math.abs(storyVideo.currentTime - media.time) > 0.03) {
+        storyVideo.currentTime = media.time;
+      }
+      storyVideo.style.transform = `scale(${media.scale})`;
+    },
+  });
+
+  gsap.from(".story-copy", {
+    scrollTrigger: {
+      trigger: "#story",
+      start: "top 80%",
+    },
+    y: 36,
+    opacity: 0,
+    duration: 0.9,
+    ease: "power3.out",
+  });
+
+  gsap.from(storyCards, {
     scrollTrigger: {
       trigger: "#story",
       start: "top 70%",
     },
-    x: 50,
+    x: 40,
     opacity: 0,
-    stagger: 0.12,
-    duration: 0.7,
-    ease: "power2.out",
+    stagger: 0.1,
+    duration: 0.75,
+    ease: "power3.out",
+    onComplete: () => {
+      gsap.set(storyCards, { clearProps: "opacity,transform" });
+      setStep(0);
+    },
   });
 
-  ScrollTrigger.create({
-    trigger: ".story-pin",
-    start: "top top",
-    end: "+=180%",
-    pin: true,
-    scrub: 0.6,
-    onUpdate: (self) => {
-      if (!Number.isFinite(duration)) return;
-      storyVideo.currentTime = self.progress * duration * 0.98;
-    },
+  const seekToStep = (step) => {
+    const trigger = storyTween.scrollTrigger;
+    if (!trigger) return;
+    ScrollTrigger.refresh();
+    const progress = gsap.utils.clamp(0.02, 0.92, (step + 0.22) / 4);
+    const top = trigger.start + progress * (trigger.end - trigger.start);
+    window.scrollTo({
+      top,
+      behavior: reduceMotion ? "auto" : "smooth",
+    });
+  };
+
+  storyCards.forEach((card) => {
+    card.addEventListener("click", () => seekToStep(Number(card.dataset.step)));
+    card.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        seekToStep(Number(card.dataset.step));
+      }
+    });
   });
 };
 

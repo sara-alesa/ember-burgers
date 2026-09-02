@@ -203,6 +203,7 @@
           <source src="assets/hero-burger.mp4" type="video/mp4" />
         </video>
         <div class="story-veil"></div>
+        <div class="story-glow" aria-hidden="true"></div>
 
         <div class="story-copy">
           <p class="eyebrow">The Deconstruct</p>
@@ -211,29 +212,41 @@
             Scroll through the anatomy of our double cheeseburger — bun, melt,
             smash, and crunch — assembled in slow fire.
           </p>
+          <p class="story-hint">Scroll to assemble · click a layer</p>
+          <div class="story-meter" aria-hidden="true">
+            <span class="story-meter-fill" id="storyMeterFill"></span>
+          </div>
+          <p class="story-count"><span id="storyStepNum">01</span> / 04</p>
+        </div>
+
+        <div class="story-layers" aria-hidden="true">
+          <span data-layer="0">Brioche</span>
+          <span data-layer="1">Gold Melt</span>
+          <span data-layer="2">Smash Sear</span>
+          <span data-layer="3">House Crunch</span>
         </div>
 
         <aside class="story-cards">
-          <article class="story-card" data-story>
+          <button class="story-card is-active" type="button" data-story data-step="0">
             <span>01</span>
             <h3>Brioche Crown</h3>
             <p>Butter-toasted until the edges glass and shatter.</p>
-          </article>
-          <article class="story-card" data-story>
+          </button>
+          <button class="story-card" type="button" data-story data-step="1">
             <span>02</span>
             <h3>Gold Melt</h3>
             <p>Aged cheddar pulled into molten sheets, never rubber.</p>
-          </article>
-          <article class="story-card" data-story>
+          </button>
+          <button class="story-card" type="button" data-story data-step="2">
             <span>03</span>
             <h3>Smash Sear</h3>
             <p>Wagyu-blend smashed on 500° iron for a lacy crust.</p>
-          </article>
-          <article class="story-card" data-story>
+          </button>
+          <button class="story-card" type="button" data-story data-step="3">
             <span>04</span>
             <h3>House Crunch</h3>
             <p>Pickle snap, ember sauce, and a finish you can hear.</p>
-          </article>
+          </button>
         </aside>
       </div>
     </section>
