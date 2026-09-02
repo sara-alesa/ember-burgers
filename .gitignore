@@ -5,3 +5,4 @@ Thumbs.db
 .DS_Store
 node_modules/
 Double_cheeseburger_deconstructs*.mp4
+.vercel
