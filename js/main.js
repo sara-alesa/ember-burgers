@@ -1,5 +1,12 @@
 gsap.registerPlugin(ScrollTrigger);
 
+if ("scrollRestoration" in history) {
+  history.scrollRestoration = "manual";
+}
+if (!window.location.hash) {
+  window.scrollTo(0, 0);
+}
+
 const loader = document.getElementById("loader");
 const hideLoader = () => {
   if (!loader || !loader.isConnected) return;
@@ -31,35 +38,48 @@ window.addEventListener("scroll", () => {
   nav.classList.toggle("scrolled", window.scrollY > 40);
 });
 
-gsap.from(".hero-anim", {
-  y: 46,
-  opacity: 0,
-  duration: 1,
-  stagger: 0.14,
-  ease: "power3.out",
-  delay: 0.35,
-});
+gsap.fromTo(
+  ".hero-anim",
+  { y: 46, opacity: 0 },
+  {
+    y: 0,
+    opacity: 1,
+    duration: 1,
+    stagger: 0.14,
+    ease: "power3.out",
+    delay: 0.35,
+  }
+);
 
-gsap.from(".float-chip", {
-  opacity: 0,
-  scale: 0.8,
-  duration: 0.8,
-  stagger: 0.1,
-  delay: 0.9,
-  ease: "back.out(1.6)",
-});
+gsap.fromTo(
+  ".float-chip",
+  { opacity: 0, scale: 0.8 },
+  {
+    opacity: 1,
+    scale: 1,
+    duration: 0.8,
+    stagger: 0.1,
+    delay: 0.9,
+    ease: "back.out(1.6)",
+  }
+);
 
-gsap.from(".burger-card", {
-  scrollTrigger: {
-    trigger: "#menuGrid",
-    start: "top 80%",
-  },
-  y: 70,
-  opacity: 0,
-  duration: 0.8,
-  stagger: 0.1,
-  ease: "power3.out",
-});
+gsap.fromTo(
+  ".burger-card",
+  { y: 70, opacity: 0 },
+  {
+    y: 0,
+    opacity: 1,
+    duration: 0.8,
+    stagger: 0.1,
+    ease: "power3.out",
+    scrollTrigger: {
+      trigger: "#menuGrid",
+      start: "top 90%",
+      toggleActions: "play none none none",
+    },
+  }
+);
 
 document.querySelectorAll("[data-tilt]").forEach((card) => {
   card.addEventListener("mousemove", (event) => {
@@ -87,7 +107,10 @@ const storyMeter = document.getElementById("storyMeterFill");
 const storyStepNum = document.getElementById("storyStepNum");
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+let storyReady = false;
 const setupStory = () => {
+  if (storyReady || !storyVideo) return;
+  storyReady = true;
   const duration = storyVideo.duration || 1;
   storyVideo.pause();
 
@@ -114,10 +137,12 @@ const setupStory = () => {
       id: "storyPin",
       trigger: ".story-pin",
       start: "top top",
-      end: "+=260%",
+      end: "+=180%",
       pin: true,
+      pinSpacing: true,
       scrub: reduceMotion ? 0 : 1.35,
       anticipatePin: 1,
+      invalidateOnRefresh: true,
       onUpdate: (self) => {
         const progress = self.progress;
         const step = Math.min(3, Math.floor(progress * 4));
@@ -134,32 +159,7 @@ const setupStory = () => {
     },
   });
 
-  gsap.from(".story-copy", {
-    scrollTrigger: {
-      trigger: "#story",
-      start: "top 80%",
-    },
-    y: 36,
-    opacity: 0,
-    duration: 0.9,
-    ease: "power3.out",
-  });
-
-  gsap.from(storyCards, {
-    scrollTrigger: {
-      trigger: "#story",
-      start: "top 70%",
-    },
-    x: 40,
-    opacity: 0,
-    stagger: 0.1,
-    duration: 0.75,
-    ease: "power3.out",
-    onComplete: () => {
-      gsap.set(storyCards, { clearProps: "opacity,transform" });
-      setStep(0);
-    },
-  });
+  setStep(0);
 
   const seekToStep = (step) => {
     const trigger = storyTween.scrollTrigger;
@@ -188,7 +188,12 @@ if (storyVideo.readyState >= 1) {
   setupStory();
 } else {
   storyVideo.addEventListener("loadedmetadata", setupStory, { once: true });
+  window.addEventListener("load", setupStory, { once: true });
 }
+
+window.addEventListener("load", () => {
+  ScrollTrigger.refresh();
+});
 
 const toast = (el) => {
   el.hidden = false;
