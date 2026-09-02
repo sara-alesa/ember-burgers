@@ -766,6 +766,10 @@ select:focus {
   color: var(--gold);
 }
 
+.footer a:hover {
+  color: var(--gold);
+}
+
 .news-row {
   grid-template-columns: 1fr auto;
 }
