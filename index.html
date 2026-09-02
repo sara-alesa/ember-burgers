@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EMBER — Taste the Ultimate Crunch</title>
+    <meta
+      name="description"
+      content="EMBER is a premium charcoal-crafted burger house. Smash-seared patties, molten gold cheddar, and a crunch you can hear."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ink: "#121212",
+              ember: "#FF5722",
+              gold: "#FFC107",
+            },
+            fontFamily: {
+              display: ["Syne", "sans-serif"],
+              sans: ["Outfit", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body class="bg-ink text-white font-sans antialiased">
+    <div class="loader" id="loader">
+      <div class="loader-mark">EMBER</div>
+      <div class="loader-bar"><span></span></div>
+    </div>
+
+    <div class="grain" aria-hidden="true"></div>
+
+    <header class="nav" id="nav">
+      <a href="#hero" class="logo">EMBER</a>
+      <nav class="nav-links" id="navLinks">
+        <a href="#menu">Menu</a>
+        <a href="#story">Craft</a>
+        <a href="#visit">Visit</a>
+        <a href="#order" class="nav-cta">Order Now</a>
+      </nav>
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu">
+        <span></span><span></span>
+      </button>
+    </header>
+
+    <section class="hero" id="hero">
+      <video
+        class="hero-video"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="auto"
+      >
+        <source src="assets/hero-burger.mp4" type="video/mp4" />
+      </video>
+      <div class="hero-overlay"></div>
+
+      <div class="float-layer" aria-hidden="true">
+        <span class="float-chip chip-1">Aged Cheddar</span>
+        <span class="float-chip chip-2">Smash Sear</span>
+        <span class="float-chip chip-3">Brioche</span>
+        <span class="float-chip chip-4">House Sauce</span>
+        <span class="orb orb-1"></span>
+        <span class="orb orb-2"></span>
+        <span class="orb orb-3"></span>
+      </div>
+
+      <div class="hero-content">
+        <p class="eyebrow hero-anim">Charcoal · Craft · Crunch</p>
+        <h1 class="hero-title hero-anim">
+          Taste the<br />
+          <span>Ultimate Crunch</span>
+        </h1>
+        <p class="hero-copy hero-anim">
+          A double-stack deconstructed in firelight. Wagyu smash, molten gold,
+          and a bun that shatters on first bite.
+        </p>
+        <div class="hero-actions hero-anim">
+          <a href="#order" class="btn-glow">Order Now</a>
+          <a href="#menu" class="btn-ghost">Explore Menu</a>
+        </div>
+      </div>
+
+      <a href="#menu" class="scroll-hint" aria-label="Scroll to menu">
+        <span>Scroll</span>
+        <i></i>
+      </a>
+    </section>
+
+    <section class="section menu-section" id="menu">
+      <div class="section-head">
+        <p class="eyebrow">Interactive Explorer</p>
+        <h2>Signature Stacks</h2>
+        <p class="lede">
+          Hover to tilt, reveal price, and feel the heat. Six house legends,
+          all smash-seared to order.
+        </p>
+      </div>
+
+      <div class="menu-grid" id="menuGrid">
+        <article class="burger-card" data-tilt>
+          <div class="card-media">
+            <img
+              src="https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&fit=crop&w=900&q=80"
+              alt="Ember Smash burger"
+            />
+            <span class="price-tag">$14</span>
+          </div>
+          <div class="card-body">
+            <h3>Ember Smash</h3>
+            <p>Double smash, American gold, pickle crunch, ember sauce.</p>
+          </div>
+        </article>
+
+        <article class="burger-card" data-tilt>
+          <div class="card-media">
+            <img
+              src="https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=900&q=80"
+              alt="Double Gold cheeseburger"
+            />
+            <span class="price-tag">$18</span>
+          </div>
+          <div class="card-body">
+            <h3>Double Gold</h3>
+            <p>Two wagyu pucks, aged cheddar lava, toasted sesame crown.</p>
+          </div>
+        </article>
+
+        <article class="burger-card" data-tilt>
+          <div class="card-media">
+            <img
+              src="https://images.unsplash.com/photo-1553979459-d2229ba7433b?auto=format&fit=crop&w=900&q=80"
+              alt="Truffle Crown burger"
+            />
+            <span class="price-tag">$22</span>
+          </div>
+          <div class="card-body">
+            <h3>Truffle Crown</h3>
+            <p>Black garlic aioli, wild mushroom, shaved truffle dust.</p>
+          </div>
+        </article>
+
+        <article class="burger-card" data-tilt>
+          <div class="card-media">
+            <img
+              src="https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?auto=format&fit=crop&w=900&q=80"
+              alt="Firebird spicy burger"
+            />
+            <span class="price-tag">$16</span>
+          </div>
+          <div class="card-body">
+            <h3>Firebird</h3>
+            <p>Chili-honey glaze, jalapeño heat, smoked cheddar snap.</p>
+          </div>
+        </article>
+
+        <article class="burger-card" data-tilt>
+          <div class="card-media">
+            <img
+              src="https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&w=900&q=80"
+              alt="Midnight Stack burger"
+            />
+            <span class="price-tag">$19</span>
+          </div>
+          <div class="card-body">
+            <h3>Midnight Stack</h3>
+            <p>Charcoal bun, night-blend sauce, crispy onion nightfall.</p>
+          </div>
+        </article>
+
+        <article class="burger-card" data-tilt>
+          <div class="card-media">
+            <img
+              src="https://images.unsplash.com/photo-1520072959219-c595dc870360?auto=format&fit=crop&w=900&q=80"
+              alt="Garden Ember vegetarian burger"
+            />
+            <span class="price-tag">$15</span>
+          </div>
+          <div class="card-body">
+            <h3>Garden Ember</h3>
+            <p>Plant smash, grilled halloumi, charred pepper relish.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="story" id="story">
+      <div class="story-pin">
+        <video class="story-video" id="storyVideo" muted playsinline preload="auto">
+          <source src="assets/hero-burger.mp4" type="video/mp4" />
+        </video>
+        <div class="story-veil"></div>
+
+        <div class="story-copy">
+          <p class="eyebrow">The Deconstruct</p>
+          <h2>Every layer, built for the bite</h2>
+          <p class="lede story-lede">
+            Scroll through the anatomy of our double cheeseburger — bun, melt,
+            smash, and crunch — assembled in slow fire.
+          </p>
+        </div>
+
+        <aside class="story-cards">
+          <article class="story-card" data-story>
+            <span>01</span>
+            <h3>Brioche Crown</h3>
+            <p>Butter-toasted until the edges glass and shatter.</p>
+          </article>
+          <article class="story-card" data-story>
+            <span>02</span>
+            <h3>Gold Melt</h3>
+            <p>Aged cheddar pulled into molten sheets, never rubber.</p>
+          </article>
+          <article class="story-card" data-story>
+            <span>03</span>
+            <h3>Smash Sear</h3>
+            <p>Wagyu-blend smashed on 500° iron for a lacy crust.</p>
+          </article>
+          <article class="story-card" data-story>
+            <span>04</span>
+            <h3>House Crunch</h3>
+            <p>Pickle snap, ember sauce, and a finish you can hear.</p>
+          </article>
+        </aside>
+      </div>
+    </section>
+
+    <section class="cta-band" id="order">
+      <div class="cta-inner">
+        <h2>Ready for the crunch?</h2>
+        <p>Pickup in 12 minutes. Delivery in the fire zone. First stack on us if it isn’t loud.</p>
+        <form class="order-form" id="orderForm">
+          <input type="text" name="name" placeholder="Your name" required />
+          <input type="tel" name="phone" placeholder="Phone" required />
+          <select name="item" required>
+            <option value="">Choose a stack</option>
+            <option>Ember Smash</option>
+            <option>Double Gold</option>
+            <option>Truffle Crown</option>
+            <option>Firebird</option>
+            <option>Midnight Stack</option>
+            <option>Garden Ember</option>
+          </select>
+          <button type="submit" class="btn-glow">Place Order</button>
+        </form>
+        <p class="form-note" id="orderNote" hidden>Kitchen’s on it. Your crunch is in the fire.</p>
+      </div>
+    </section>
+
+    <footer class="footer" id="visit">
+      <div class="footer-grid">
+        <div>
+          <a href="#hero" class="logo">EMBER</a>
+          <p class="footer-blurb">
+            Premium smash house. Charcoal kitchen. Night service until 1am.
+          </p>
+        </div>
+        <div>
+          <h4>Visit</h4>
+          <p>414 Flame Lane<br />Downtown Ember District</p>
+          <p class="muted">Open daily 11:00 — 01:00</p>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <div class="socials">
+            <a href="#" aria-label="Instagram">Instagram</a>
+            <a href="#" aria-label="TikTok">TikTok</a>
+            <a href="#" aria-label="X">X</a>
+          </div>
+          <p class="muted">hello@emberburgers.com</p>
+        </div>
+        <form class="news" id="newsForm">
+          <h4>Newsletter</h4>
+          <p>Drop your email for midnight drops and secret stacks.</p>
+          <div class="news-row">
+            <input type="email" name="email" placeholder="you@nightmail.com" required />
+            <button type="submit" class="btn-glow sm">Join</button>
+          </div>
+          <p class="form-note" id="newsNote" hidden>You’re on the list.</p>
+        </form>
+      </div>
+      <div class="footer-bar">
+        <span>© 2026 EMBER. All rights reserved.</span>
+        <span>Crafted over fire.</span>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
