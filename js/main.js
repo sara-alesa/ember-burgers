@@ -27,7 +27,8 @@ const menuToggle = document.getElementById("menuToggle");
 const navLinks = document.getElementById("navLinks");
 
 menuToggle.addEventListener("click", () => {
-  navLinks.classList.toggle("open");
+  const open = navLinks.classList.toggle("open");
+  menuToggle.setAttribute("aria-expanded", String(open));
 });
 
 navLinks.querySelectorAll("a").forEach((link) => {
@@ -82,6 +83,7 @@ gsap.fromTo(
 );
 
 document.querySelectorAll("[data-tilt]").forEach((card) => {
+  if (window.matchMedia("(hover: none)").matches) return;
   card.addEventListener("mousemove", (event) => {
     const rect = card.getBoundingClientRect();
     const x = (event.clientX - rect.left) / rect.width;
@@ -169,7 +171,8 @@ const setupStory = (frames) => {
       id: "storyPin",
       trigger: ".story-pin",
       start: "top top",
-      end: "+=240%",
+      end: () =>
+        window.matchMedia("(max-width: 720px)").matches ? "+=140%" : "+=240%",
       pin: true,
       pinSpacing: true,
       scrub: reduceMotion ? 0 : 1.15,
@@ -286,6 +289,12 @@ const setupStory = (frames) => {
   });
 
   storyWrap?.addEventListener("pointermove", (event) => {
+    if (window.matchMedia("(pointer: coarse)").matches) {
+      if (!dragging) return;
+      const delta = (startY - event.clientY) / 280;
+      seekToProgress(startProgress + delta, false);
+      return;
+    }
     const rect = storyWrap.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;

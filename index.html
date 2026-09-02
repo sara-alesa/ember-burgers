@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>EMBER — Taste the Ultimate Crunch</title>
     <meta
       name="description"
@@ -50,7 +50,7 @@
         <a href="#visit">Visit</a>
         <a href="#order" class="nav-cta">Order Now</a>
       </nav>
-      <button class="menu-toggle" id="menuToggle" aria-label="Open menu">
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">
         <span></span><span></span>
       </button>
     </header>
@@ -202,6 +202,8 @@
       <div class="story-pin">
         <div class="story-stage-wrap" id="storyStageWrap">
           <canvas class="story-stage" id="storyCanvas" width="1280" height="720" aria-hidden="true"></canvas>
+          <div class="story-veil"></div>
+          <div class="story-glow" aria-hidden="true"></div>
           <div class="story-spot" id="storySpot" aria-hidden="true"></div>
           <div class="story-hotspots">
             <button class="hotspot" type="button" data-step="0" aria-label="Brioche Crown">
@@ -217,9 +219,13 @@
               <i></i>
             </button>
           </div>
+          <div class="story-layers" aria-hidden="true">
+            <span data-layer="0">Brioche</span>
+            <span data-layer="1">Gold Melt</span>
+            <span data-layer="2">Smash Sear</span>
+            <span data-layer="3">House Crunch</span>
+          </div>
         </div>
-        <div class="story-veil"></div>
-        <div class="story-glow" aria-hidden="true"></div>
 
         <div class="story-copy">
           <p class="eyebrow">The Deconstruct</p>
@@ -238,13 +244,6 @@
             <button type="button" class="story-nav-btn" id="storyNext" aria-label="Next layer">→</button>
             <button type="button" class="story-toggle" id="storyToggle">Assemble</button>
           </div>
-        </div>
-
-        <div class="story-layers" aria-hidden="true">
-          <span data-layer="0">Brioche</span>
-          <span data-layer="1">Gold Melt</span>
-          <span data-layer="2">Smash Sear</span>
-          <span data-layer="3">House Crunch</span>
         </div>
 
         <aside class="story-cards">
